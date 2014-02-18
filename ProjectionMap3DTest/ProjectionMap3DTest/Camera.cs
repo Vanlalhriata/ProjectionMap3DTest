@@ -17,6 +17,7 @@ namespace ProjectionMap3DTest
         public Vector3 Position { get; set; }
         public Vector3 UpDirection { get; set; }
         public Vector3 LookDirection { get; set; }
+        public float FieldOfView { get; set; }
 
         public Vector3 LookAt
         {
@@ -68,6 +69,18 @@ namespace ProjectionMap3DTest
                 float rotY = OMEGA * rotation.X * speedModifier * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 float rotX = OMEGA * rotation.Y * speedModifier * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 LookDirection = Vector3.Transform(LookDirection, Matrix.CreateRotationY(rotY) * Matrix.CreateRotationX(rotX)); ;
+            }
+
+            // FieldOfView
+            {
+                int increment = 0;
+                float speedModifier = keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift) ? 5f : 1f;
+
+                increment += keyboardState.IsKeyDown(Keys.Z) ? -1 : 0;
+                increment += keyboardState.IsKeyDown(Keys.X) ? 1 : 0;
+
+                FieldOfView = MathHelper.Clamp(FieldOfView + increment * speedModifier * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.1f,
+                                                MathHelper.ToRadians(30), MathHelper.ToRadians(180));
             }
         }
     }

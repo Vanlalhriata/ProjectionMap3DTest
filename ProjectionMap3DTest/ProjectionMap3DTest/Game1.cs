@@ -92,6 +92,7 @@ namespace ProjectionMap3DTest
                 pass.Apply();
 
             viewMatrix = Matrix.CreateLookAt(camera.Position, camera.LookAt, camera.UpDirection);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(camera.FieldOfView, device.Viewport.AspectRatio, 1.0f, 1000.0f);
             Matrix worldMatrix = Matrix.Identity;
 
             effect.Parameters["xView"].SetValue(viewMatrix);
@@ -109,6 +110,9 @@ namespace ProjectionMap3DTest
 
                 string cameraLookDirectionString = String.Format("Camera lookDirection: {0:0.000}, {1:0.000}, {2:0.000}", camera.LookDirection.X, camera.LookDirection.Y, camera.LookDirection.Z);
                 spriteBatch.DrawString(defaultSpriteFont, cameraLookDirectionString, new Vector2(10, 25), Color.White);
+
+                string cameraFieldOfViewString = String.Format("Camera fieldOfView: {0:0.0} degrees", MathHelper.ToDegrees(camera.FieldOfView));
+                spriteBatch.DrawString(defaultSpriteFont, cameraFieldOfViewString, new Vector2(10, 40), Color.White);
             }
             spriteBatch.End();
 
@@ -120,13 +124,13 @@ namespace ProjectionMap3DTest
             vertices = new VertexPositionColor[8];
 
             vertices[0].Position = new Vector3(0f, 0f, 0f);
-            vertices[1].Position = new Vector3(5.3f, 0f, 0f);
-            vertices[2].Position = new Vector3(5.3f, 13.2f, 0f);
-            vertices[3].Position = new Vector3(0f, 13.2f, 0f);
-            vertices[4].Position = new Vector3(0f, 0f, 10.3f);
-            vertices[5].Position = new Vector3(5.3f, 0f, 10.3f);
-            vertices[6].Position = new Vector3(5.3f, 13.2f, 10.3f);
-            vertices[7].Position = new Vector3(0f, 13.2f, 10.3f);
+            vertices[1].Position = new Vector3(9.5f, 0f, 0f);
+            vertices[2].Position = new Vector3(9.5f, 12.3f, 0f);
+            vertices[3].Position = new Vector3(0f, 12.3f, 0f);
+            vertices[4].Position = new Vector3(0f, 0f, 4.8f);
+            vertices[5].Position = new Vector3(9.5f, 0f, 4.8f);
+            vertices[6].Position = new Vector3(9.5f, 12.3f, 4.8f);
+            vertices[7].Position = new Vector3(0f, 12.3f, 4.8f);
 
             for (int i = 0; i < vertices.Length; i++)
                 vertices[i].Color = Color.White;
@@ -177,10 +181,10 @@ namespace ProjectionMap3DTest
         private void SetUpCamera()
         {
             camera = new Camera();
-            camera.Position = new Vector3(0,0,50);
-            camera.LookDirection = new Vector3(0, 0, -1);
-
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 1000.0f);
+            camera.Position = new Vector3(0, -65, 70);
+            camera.LookDirection = new Vector3(0, 65, -70);
+            camera.LookDirection.Normalize();
+            camera.FieldOfView = 1.86f; // in radians
         }
 
         private void CopyToBuffers()
