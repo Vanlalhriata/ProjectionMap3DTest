@@ -28,6 +28,8 @@ namespace ProjectionMap3DTest
         Matrix projectionMatrix;
 
         int[] indices;
+        VertexBuffer myVertexBuffer;
+        IndexBuffer myIndexBuffer;
 
         public Game1()
         {
@@ -59,6 +61,7 @@ namespace ProjectionMap3DTest
             SetUpVertices();
             SetUpIndices();
             SetUpCamera();
+            CopyToBuffers();
         }
 
         protected override void UnloadContent()
@@ -90,7 +93,9 @@ namespace ProjectionMap3DTest
             effect.Parameters["xProjection"].SetValue(projectionMatrix);
             effect.Parameters["xWorld"].SetValue(worldMatrix);
 
-            device.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length, indices, 0, indices.Length / 3, VertexPositionColor.VertexDeclaration);
+            device.Indices = myIndexBuffer;
+            device.SetVertexBuffer(myVertexBuffer);
+            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertices.Length, 0, indices.Length / 3);
 
             base.Draw(gameTime);
         }
@@ -158,6 +163,15 @@ namespace ProjectionMap3DTest
         {
             viewMatrix = Matrix.CreateLookAt(new Vector3(100, 200, 300), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 1000.0f);
+        }
+
+        private void CopyToBuffers()
+        {
+            myVertexBuffer = new VertexBuffer(device, VertexPositionColor.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
+            myVertexBuffer.SetData(vertices);
+
+            myIndexBuffer = new IndexBuffer(device, typeof(int), indices.Length, BufferUsage.WriteOnly);
+            myIndexBuffer.SetData(indices);
         }
     }
 }
