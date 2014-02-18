@@ -26,10 +26,13 @@ namespace ProjectionMap3DTest
 
         Matrix viewMatrix;
         Matrix projectionMatrix;
+        Camera camera;
 
         int[] indices;
         VertexBuffer myVertexBuffer;
         IndexBuffer myIndexBuffer;
+
+        SpriteFont defaultSpriteFont;
 
         public Game1()
         {
@@ -51,10 +54,7 @@ namespace ProjectionMap3DTest
         {
             device = graphics.GraphicsDevice;
             effect = Content.Load<Effect>("effects");
-
-            //RasterizerState rs = new RasterizerState();
-            //rs.FillMode = FillMode.WireFrame;
-            //device.RasterizerState = rs;
+            defaultSpriteFont = Content.Load<SpriteFont>("DefaultSpriteFont");
 
             spriteBatch = new SpriteBatch(device);
 
@@ -74,7 +74,7 @@ namespace ProjectionMap3DTest
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            camera.ProcessKeyboard(Keyboard.GetState(), gameTime);
 
             base.Update(gameTime);
         }
@@ -83,10 +83,15 @@ namespace ProjectionMap3DTest
         {
             device.Clear(Color.Black);
 
+            RasterizerState rs = new RasterizerState();
+            rs.FillMode = FillMode.WireFrame;
+            device.RasterizerState = rs;
+
             effect.CurrentTechnique = effect.Techniques["ColoredNoShading"];
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
                 pass.Apply();
 
+            viewMatrix = Matrix.CreateLookAt(camera.Position, camera.LookAt, camera.UpDirection);
             Matrix worldMatrix = Matrix.Identity;
 
             effect.Parameters["xView"].SetValue(viewMatrix);
@@ -96,6 +101,16 @@ namespace ProjectionMap3DTest
             device.Indices = myIndexBuffer;
             device.SetVertexBuffer(myVertexBuffer);
             device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertices.Length, 0, indices.Length / 3);
+
+            spriteBatch.Begin();
+            {
+                string cameraPositionString = String.Format("Camera position: {0:0}, {1:0}, {2:0}", camera.Position.X, camera.Position.Y, camera.Position.Z);
+                spriteBatch.DrawString(defaultSpriteFont, cameraPositionString, new Vector2(10, 10), Color.White);
+
+                string cameraLookDirectionString = String.Format("Camera lookDirection: {0:0.000}, {1:0.000}, {2:0.000}", camera.LookDirection.X, camera.LookDirection.Y, camera.LookDirection.Z);
+                spriteBatch.DrawString(defaultSpriteFont, cameraLookDirectionString, new Vector2(10, 25), Color.White);
+            }
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -161,7 +176,10 @@ namespace ProjectionMap3DTest
 
         private void SetUpCamera()
         {
-            viewMatrix = Matrix.CreateLookAt(new Vector3(100, 200, 300), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            camera = new Camera();
+            camera.Position = new Vector3(0,0,50);
+            camera.LookDirection = new Vector3(0, 0, -1);
+
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 1000.0f);
         }
 
