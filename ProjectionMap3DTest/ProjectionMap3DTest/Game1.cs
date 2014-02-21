@@ -42,7 +42,7 @@ namespace ProjectionMap3DTest
 
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferWidth = 1366;
+            graphics.PreferredBackBufferWidth = 1024;
             graphics.PreferredBackBufferHeight = 768;
             graphics.IsFullScreen = true;
             graphics.ApplyChanges();
@@ -92,7 +92,7 @@ namespace ProjectionMap3DTest
                 pass.Apply();
 
             viewMatrix = Matrix.CreateLookAt(camera.Position, camera.LookAt, camera.UpDirection);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(camera.FieldOfView, device.Viewport.AspectRatio, 1.0f, 1000.0f);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(camera.FieldOfView, device.Viewport.AspectRatio, 0.01f, 1000.0f);
             //projectionMatrix = Matrix.CreateOrthographic(262f, 144f, 0.1f, 500f );
             Matrix worldMatrix = Matrix.Identity;
 
@@ -126,24 +126,32 @@ namespace ProjectionMap3DTest
 
             // Box
             {
-                float x = 9.5f;
-                float y = 12.3f;
-                float z = 4.8f;
+                float xStart = 28f;
+                float yStart = 25f - 12.6f;
+                float zStart = 0f;
 
-                vertices[0].Position = new Vector3(0, 0, 0);
-                vertices[1].Position = new Vector3(x, 0, 0);
-                vertices[2].Position = new Vector3(x, y, 0);
-                vertices[3].Position = new Vector3(0, y, 0);
-                vertices[4].Position = new Vector3(0, 0, z);
-                vertices[5].Position = new Vector3(x, 0, z);
+                float length = 9.5f;    //x
+                float height = 12.6f;   //y
+                float depth = 4.8f;     //z
+
+                float x = xStart + length;
+                float y = yStart + height;
+                float z = zStart + depth;
+
+                vertices[0].Position = new Vector3(xStart, yStart, zStart);
+                vertices[1].Position = new Vector3(x, yStart, zStart);
+                vertices[2].Position = new Vector3(x, y, zStart);
+                vertices[3].Position = new Vector3(xStart, y, zStart);
+                vertices[4].Position = new Vector3(xStart, yStart, z);
+                vertices[5].Position = new Vector3(x, yStart, z);
                 vertices[6].Position = new Vector3(x, y, z);
-                vertices[7].Position = new Vector3(0, y, z);
+                vertices[7].Position = new Vector3(xStart, y, z);
             }
 
             // Field of view plane
             {
-                float w = 262f / 2f;
-                float h = 144f / 2f;
+                float w = 86.6f / 2f;
+                float h = 65.0f / 2f;
 
                 vertices[8].Position = new Vector3(-w, -h, 0);
                 vertices[9].Position = new Vector3(w, -h, 0);
@@ -209,10 +217,10 @@ namespace ProjectionMap3DTest
         private void SetUpCamera()
         {
             camera = new Camera();
-            camera.Position = new Vector3(0, -100, 73);
-            camera.LookDirection = new Vector3(0, 100, -73);
+            camera.Position = new Vector3(0, -23, 123);
+            camera.LookDirection = new Vector3(0, 23, -123);
             camera.LookDirection.Normalize();
-            camera.FieldOfView = 1.86f; // in radians
+            camera.FieldOfView = MathHelper.ToRadians(28.8f);
         }
 
         private void CopyToBuffers()

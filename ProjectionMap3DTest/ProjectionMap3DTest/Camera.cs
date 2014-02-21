@@ -9,7 +9,7 @@ namespace ProjectionMap3DTest
 {
     class Camera
     {
-        private const float SPEED = 10f;
+        private const float SPEED = 1f;
         private const float OMEGA = 0.1f;
 
         #region Properties
@@ -79,8 +79,8 @@ namespace ProjectionMap3DTest
                 increment += keyboardState.IsKeyDown(Keys.Z) ? -1 : 0;
                 increment += keyboardState.IsKeyDown(Keys.X) ? 1 : 0;
 
-                FieldOfView = MathHelper.Clamp(FieldOfView + increment * speedModifier * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.1f,
-                                                MathHelper.ToRadians(30), MathHelper.ToRadians(180));
+                FieldOfView = MathHelper.Clamp(FieldOfView + increment * speedModifier * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.01f,
+                                                MathHelper.ToRadians(15), MathHelper.ToRadians(180));
             }
         }
     }
